@@ -41,6 +41,7 @@ public class GlobalExceptionHandler {
     }
 
     // CustomException
+    @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException ex){
         log.warn("[{}] {}", ex.getClass().getSimpleName(), ex.getMessage());
         return ResponseEntity
