@@ -1,5 +1,6 @@
 package com.jes.waitit.domain.user.service;
 
+import com.jes.waitit.domain.user.dto.ProfileResponseDTO;
 import com.jes.waitit.domain.user.entity.User;
 import com.jes.waitit.domain.user.respository.UserRepository;
 import com.jes.waitit.global.exception.CustomException;
@@ -23,5 +24,15 @@ public class UserService {
 
     public void save(User user) {
         userRepository.save(user);
+    }
+
+    public ProfileResponseDTO getProfile(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return ProfileResponseDTO.builder()
+                .nickname(user.getNickname())
+                .createdAt(user.getCreatedAt())
+                .build();
     }
 }
