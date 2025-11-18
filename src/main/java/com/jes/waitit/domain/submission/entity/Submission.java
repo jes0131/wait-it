@@ -28,6 +28,12 @@ public class Submission {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
+    @Column(name = "waiting_num")
+    private Integer waitingNum;
+
+    @Column
+    private String password;
+
     @Column(name = "submission_state")
     @Enumerated(EnumType.STRING)
     private SubmissionState submissionState;
