@@ -19,6 +19,11 @@ public class SubmissionService {
         return submissionRepository.save(submission);
     }
 
+    public Integer findMaxWaitingNumByReservationId(Long reservationId) {
+        return submissionRepository.findMaxWaitingNumByReservationId(reservationId)
+                .orElse(0);
+    }
+
     public List<Answer> saveAllAnswers(List<Answer> answers) {
         return answerRepository.saveAll(answers);
     }
