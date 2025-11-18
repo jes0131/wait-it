@@ -2,6 +2,8 @@ package com.jes.waitit.domain.reservation.controller;
 
 import com.jes.waitit.domain.reservation.dto.ReservationCreateRequestDTO;
 import com.jes.waitit.domain.reservation.dto.ReservationDetailResponseDTO;
+import com.jes.waitit.domain.reservation.dto.ReservationSubmitRequestDTO;
+import com.jes.waitit.domain.reservation.dto.ReservationSubmitResponseDTO;
 import com.jes.waitit.domain.reservation.service.ReservationService;
 import com.jes.waitit.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +30,10 @@ public class ReservationController {
     @GetMapping("{id}")
     public ResponseEntity<ApiResponse<ReservationDetailResponseDTO>> getReservation(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(reservationService.getReservation(id)));
+    }
+
+    @PostMapping("{id}/submit")
+    public ResponseEntity<ApiResponse<ReservationSubmitResponseDTO>> submitReservation(@PathVariable Long id, @RequestBody ReservationSubmitRequestDTO dto) {
+        return ResponseEntity.ok(ApiResponse.success(reservationService.submitReservation(id, dto)));
     }
 }
