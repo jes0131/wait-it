@@ -30,6 +30,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public TmpPasswordGenerator tmpPasswordGenerator() {
+        return new TmpPasswordGenerator();
+    }
+
+    @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(tokenProvider, customUserDetailsService);
     }
