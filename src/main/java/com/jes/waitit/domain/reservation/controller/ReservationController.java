@@ -32,6 +32,12 @@ public class ReservationController {
         return ResponseEntity.ok(ApiResponse.success(reservationService.getReservation(id)));
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id, Authentication authentication) {
+        reservationService.deletedReservation(id, authentication.getName());
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("{id}/submit")
     public ResponseEntity<ApiResponse<ReservationSubmitResponseDTO>> submitReservation(@PathVariable Long id, @RequestBody ReservationSubmitRequestDTO dto) {
         return ResponseEntity.ok(ApiResponse.success(reservationService.submitReservation(id, dto)));

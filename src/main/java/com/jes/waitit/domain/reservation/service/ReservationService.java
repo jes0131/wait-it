@@ -90,6 +90,18 @@ public class ReservationService {
                 .build();
     }
 
+    public void deletedReservation(Long reservationId, String username) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!username.equals(reservation.getOwner().getUsername())) {
+            throw new CustomException(ErrorCode.RESERVATION_DELETE_FORBIDDEN);
+        }
+
+        reservation.setDeleted(true);
+        reservationRepository.save(reservation);
+    }
+
     @Transactional
     public ReservationSubmitResponseDTO submitReservation(Long reservationId,ReservationSubmitRequestDTO dto) {
         Reservation reservation = reservationRepository.findById(reservationId)
