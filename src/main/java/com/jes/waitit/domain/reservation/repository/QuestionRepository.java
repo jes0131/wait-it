@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAllByReservationOrderByQuestionOrderAsc(Reservation reservation);
+    Question findByReservationAndQuestionOrder(Reservation reservation, Integer questionOrder);
 }
