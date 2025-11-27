@@ -2,6 +2,7 @@ package com.jes.waitit.domain.submission.service;
 
 import com.jes.waitit.domain.submission.entity.Answer;
 import com.jes.waitit.domain.submission.entity.Submission;
+import com.jes.waitit.domain.submission.enums.SubmissionState;
 import com.jes.waitit.domain.submission.repository.AnswerRepository;
 import com.jes.waitit.domain.submission.repository.SubmissionRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,13 @@ public class SubmissionService {
         return submissionRepository.save(submission);
     }
 
-    public Integer findMaxWaitingNumByReservationId(Long reservationId) {
-        return submissionRepository.findMaxWaitingNumByReservationId(reservationId)
+    public Integer findMaxWaitingNumByReservationIdAndSubmissionStateIsPending(Long reservationId) {
+        return submissionRepository.findMaxWaitingNumByReservationIdAndSubmissionStateIsPending(reservationId)
                 .orElse(0);
+    }
+
+    public Integer countByReservationIdAndSubmissionState(Long reservationId, SubmissionState submissionState) {
+        return submissionRepository.countByReservationIdAndSubmissionState(reservationId, submissionState);
     }
 
     public List<Answer> saveAllAnswers(List<Answer> answers) {
