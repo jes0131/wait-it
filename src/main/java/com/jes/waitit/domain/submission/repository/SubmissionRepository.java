@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
-    @Query(value = "SELECT MAX(s.waiting_num) FROM submissions s WHERE s.reservation_id = :reservationId AND s.submission_state = PENDING", nativeQuery = true)
-    Optional<Integer> findMaxWaitingNumByReservationIdAndSubmissionStateIsPending(Long reservationId);
+    @Query(value = "SELECT MAX(s.waiting_num) FROM submissions s WHERE s.reservation_id = :reservationId AND s.submission_state IN ('CANCELED', 'RESOLVED')", nativeQuery = true)
+    Optional<Integer> findLastProcessedWaitingNumByReservationId(Long reservationId);
 
     Integer countByReservationIdAndSubmissionState(Long reservationId, SubmissionState submissionState);
 }
