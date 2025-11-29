@@ -5,6 +5,5 @@ import lombok.Getter;
 @Getter
 public enum SubmissionState {
     PENDING,
-    CANCELED,
-    RESOLVED
+    CANCELED;
 }
