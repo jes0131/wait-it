@@ -20,13 +20,18 @@ public class SubmissionService {
         return submissionRepository.save(submission);
     }
 
-    public Integer findMaxWaitingNumByReservationIdAndSubmissionStateIsPending(Long reservationId) {
-        return submissionRepository.findMaxWaitingNumByReservationIdAndSubmissionStateIsPending(reservationId)
+    public Integer findLastProcessedWaitingNumByReservationId(Long reservationId) {
+        return submissionRepository.findLastProcessedWaitingNumByReservationId(reservationId)
                 .orElse(0);
     }
 
-    public Integer countByReservationIdAndSubmissionState(Long reservationId, SubmissionState submissionState) {
-        return submissionRepository.countByReservationIdAndSubmissionState(reservationId, submissionState);
+    public Integer findLastWaitingNumByReservationIdAndIsDeletedFalse(Long reservationId) {
+        return submissionRepository.findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId)
+                .orElse(0);
+    }
+
+    public Integer countPendingByReservationId(Long reservationId) {
+        return submissionRepository.countByReservationIdAndSubmissionState(reservationId, SubmissionState.PENDING);
     }
 
     public List<Answer> saveAllAnswers(List<Answer> answers) {

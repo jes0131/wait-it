@@ -44,4 +44,7 @@ public class Submission {
     @Column(name = "submitted_at")
     @CreatedDate
     private LocalDateTime submittedAt;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 }
