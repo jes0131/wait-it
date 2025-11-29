@@ -34,6 +34,12 @@ public class ReservationService {
     private final TmpPasswordGenerator tmpPasswordGenerator;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
+    public boolean existReservationById(Long reservationId) {
+        return reservationRepository.existsById(reservationId);
+    }
+
+    // 예약 폼 생성
     @Transactional
     public void createReservation(String username, ReservationCreateRequestDTO dto) {
         User user  = userService.findByUsername(username);
@@ -62,6 +68,7 @@ public class ReservationService {
         questionRepository.saveAll(questions);
     }
 
+    // 예약 폼 세부 정보 조회
     @Transactional(readOnly = true)
     public ReservationDetailResponseDTO getReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -90,6 +97,7 @@ public class ReservationService {
                 .build();
     }
 
+    // 예약 폼 삭제
     @Transactional
     public void deletedReservation(Long reservationId, String username) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -103,6 +111,7 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
+    // 예약 폼 제출
     @Transactional
     public ReservationSubmitResponseDTO submitReservation(Long reservationId,ReservationSubmitRequestDTO dto) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -138,6 +147,7 @@ public class ReservationService {
                 .build();
     }
 
+    // Websocket 최초 데이터 전송
     @Transactional
     public ReservationStatusInitialDataDTO getInitialData(Long reservationId) {
         Integer lastProcessedWaitingNum = submissionService.findLastProcessedWaitingNumByReservationId(reservationId);

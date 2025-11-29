@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -18,22 +17,7 @@ public class ReservationStatusHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String idParam = UriComponentsBuilder
-                .fromUri(session.getUri())
-                .build()
-                .getQueryParams()
-                .getFirst("id");
-        if (idParam == null || idParam.isBlank()) {
-            log.warn("[{}] query id is null", this.getClass().getSimpleName());
-            return;
-        }
-
-        Long reservationId = null;
-        try {
-            reservationId = Long.valueOf(idParam);
-        } catch (NumberFormatException e) {
-            log.warn("[{}] invalid reservation id", this.getClass().getSimpleName());
-        }
+        Long reservationId = (Long) session.getAttributes().get("id");
 
         reservationStatusBroadcaster.addSession(reservationId, session);
         log.info("[{}] Connection Established to {}", this.getClass().getSimpleName(), reservationId);
