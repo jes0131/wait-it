@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "reservations")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -37,4 +36,8 @@ public class Reservation {
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

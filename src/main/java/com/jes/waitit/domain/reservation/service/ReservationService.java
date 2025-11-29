@@ -19,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,6 +33,12 @@ public class ReservationService {
     private final TmpPasswordGenerator tmpPasswordGenerator;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
+    public boolean existReservationById(Long reservationId) {
+        return reservationRepository.existsById(reservationId);
+    }
+
+    // 예약 폼 생성
     @Transactional
     public void createReservation(String username, ReservationCreateRequestDTO dto) {
         User user  = userService.findByUsername(username);
@@ -46,40 +51,35 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(newReservation);
 
         List<QuestionCreateRequestDTO> newQuestions = dto.getQuestions();
-        List<Question> questions = new ArrayList<>();
-        for (QuestionCreateRequestDTO q : newQuestions) {
-            Question question = Question.builder()
-                    .questionOrder(q.getOrder())
-                    .questionType(q.getQuestionType())
-                    .title(q.getTitle())
-                    .description(q.getDescription())
-                    .placeholder(q.getPlaceholder())
-                    .required(q.isRequired())
-                    .reservation(reservation)
-                    .build();
-            questions.add(question);
-        }
+        List<Question> questions = newQuestions.stream().map(q -> Question.builder()
+                .questionOrder(q.getOrder())
+                .questionType(q.getQuestionType())
+                .title(q.getTitle())
+                .description(q.getDescription())
+                .placeholder(q.getPlaceholder())
+                .required(q.isRequired())
+                .reservation(reservation)
+                .build()
+        ).toList();
         questionRepository.saveAll(questions);
     }
 
+    // 예약 폼 세부 정보 조회
     @Transactional(readOnly = true)
     public ReservationDetailResponseDTO getReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         List<Question> questions = questionRepository.findAllByReservationOrderByQuestionOrderAsc(reservation);
-        List<QuestionDetailResponseDTO> questionDetails = new ArrayList<>();
-        for (Question q : questions) {
-            QuestionDetailResponseDTO questionDetail = QuestionDetailResponseDTO.builder()
+        List<QuestionDetailResponseDTO> questionDetails = questions.stream().map(q -> QuestionDetailResponseDTO.builder()
                     .order(q.getQuestionOrder())
                     .questionType(q.getQuestionType())
                     .title(q.getTitle())
                     .description(q.getDescription())
                     .placeholder(q.getPlaceholder())
                     .required(q.isRequired())
-                    .build();
-            questionDetails.add(questionDetail);
-        }
+                    .build()
+        ).toList();
 
         return ReservationDetailResponseDTO.builder()
                 .title(reservation.getTitle())
@@ -90,6 +90,8 @@ public class ReservationService {
                 .build();
     }
 
+    // 예약 폼 삭제
+    @Transactional
     public void deletedReservation(Long reservationId, String username) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
@@ -98,16 +100,16 @@ public class ReservationService {
             throw new CustomException(ErrorCode.RESERVATION_DELETE_FORBIDDEN);
         }
 
-        reservation.setDeleted(true);
-        reservationRepository.save(reservation);
+        reservation.delete();
     }
 
+    // 예약 폼 제출
     @Transactional
     public ReservationSubmitResponseDTO submitReservation(Long reservationId,ReservationSubmitRequestDTO dto) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        Integer waitingNum = submissionService.findMaxWaitingNumByReservationIdAndSubmissionStateIsPending(reservationId) + 1;
+        Integer waitingNum = submissionService.findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId) + 1;
         String password = tmpPasswordGenerator.generatePassword(6);
 
         Submission tmpSubmission = Submission.builder()
@@ -118,22 +120,27 @@ public class ReservationService {
                 .build();
         Submission submission = submissionService.saveSubmission(tmpSubmission);
 
-        List<Answer> answers = new ArrayList<>();
-        for (QuestionSubmitRequestDTO q : dto.getAnswers()) {
+        List<Answer> answers = dto.getAnswers().stream().map(q -> {
             Question question = questionRepository.findByReservationAndQuestionOrder(reservation, q.getOrder());
-
-            Answer answer = Answer.builder()
+            return Answer.builder()
                     .submission(submission)
                     .question(question)
                     .content(q.getContent())
                     .build();
-            answers.add(answer);
-        }
+        }).toList();
         submissionService.saveAllAnswers(answers);
 
         return ReservationSubmitResponseDTO.builder()
                 .waitingNum(waitingNum)
                 .password(password)
                 .build();
+    }
+
+    // Websocket 최초 데이터 전송
+    @Transactional
+    public ReservationStatusInitialDataDTO getInitialData(Long reservationId) {
+        Integer lastProcessedWaitingNum = submissionService.findLastProcessedWaitingNumByReservationId(reservationId);
+        Integer waitingCount = submissionService.countPendingByReservationId(reservationId);
+        return new ReservationStatusInitialDataDTO(waitingCount, lastProcessedWaitingNum);
     }
 }
