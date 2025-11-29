@@ -25,6 +25,11 @@ public class SubmissionService {
                 .orElse(0);
     }
 
+    public Integer findLastWaitingNumByReservationIdAndIsDeletedFalse(Long reservationId) {
+        return submissionRepository.findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId)
+                .orElse(0);
+    }
+
     public Integer countPendingByReservationId(Long reservationId) {
         return submissionRepository.countByReservationIdAndSubmissionState(reservationId, SubmissionState.PENDING);
     }
