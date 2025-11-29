@@ -107,7 +107,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        Integer waitingNum = submissionService.findMaxWaitingNumByReservationIdAndSubmissionStateIsPending(reservationId) + 1;
+        Integer waitingNum = submissionService.findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId) + 1;
         String password = tmpPasswordGenerator.generatePassword(6);
 
         Submission tmpSubmission = Submission.builder()
