@@ -90,6 +90,7 @@ public class ReservationService {
                 .build();
     }
 
+    @Transactional
     public void deletedReservation(Long reservationId, String username) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
@@ -135,5 +136,12 @@ public class ReservationService {
                 .waitingNum(waitingNum)
                 .password(password)
                 .build();
+    }
+
+    @Transactional
+    public ReservationStatusInitialDataDTO getInitialData(Long reservationId) {
+        Integer lastProcessedWaitingNum = submissionService.findLastProcessedWaitingNumByReservationId(reservationId);
+        Integer waitingCount = submissionService.countPendingByReservationId(reservationId);
+        return new ReservationStatusInitialDataDTO(waitingCount, lastProcessedWaitingNum);
     }
 }
