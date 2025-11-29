@@ -19,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,19 +51,16 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(newReservation);
 
         List<QuestionCreateRequestDTO> newQuestions = dto.getQuestions();
-        List<Question> questions = new ArrayList<>();
-        for (QuestionCreateRequestDTO q : newQuestions) {
-            Question question = Question.builder()
-                    .questionOrder(q.getOrder())
-                    .questionType(q.getQuestionType())
-                    .title(q.getTitle())
-                    .description(q.getDescription())
-                    .placeholder(q.getPlaceholder())
-                    .required(q.isRequired())
-                    .reservation(reservation)
-                    .build();
-            questions.add(question);
-        }
+        List<Question> questions = newQuestions.stream().map(q -> Question.builder()
+                .questionOrder(q.getOrder())
+                .questionType(q.getQuestionType())
+                .title(q.getTitle())
+                .description(q.getDescription())
+                .placeholder(q.getPlaceholder())
+                .required(q.isRequired())
+                .reservation(reservation)
+                .build()
+        ).toList();
         questionRepository.saveAll(questions);
     }
 
@@ -75,18 +71,15 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         List<Question> questions = questionRepository.findAllByReservationOrderByQuestionOrderAsc(reservation);
-        List<QuestionDetailResponseDTO> questionDetails = new ArrayList<>();
-        for (Question q : questions) {
-            QuestionDetailResponseDTO questionDetail = QuestionDetailResponseDTO.builder()
+        List<QuestionDetailResponseDTO> questionDetails = questions.stream().map(q -> QuestionDetailResponseDTO.builder()
                     .order(q.getQuestionOrder())
                     .questionType(q.getQuestionType())
                     .title(q.getTitle())
                     .description(q.getDescription())
                     .placeholder(q.getPlaceholder())
                     .required(q.isRequired())
-                    .build();
-            questionDetails.add(questionDetail);
-        }
+                    .build()
+        ).toList();
 
         return ReservationDetailResponseDTO.builder()
                 .title(reservation.getTitle())
@@ -107,8 +100,7 @@ public class ReservationService {
             throw new CustomException(ErrorCode.RESERVATION_DELETE_FORBIDDEN);
         }
 
-        reservation.setDeleted(true);
-        reservationRepository.save(reservation);
+        reservation.delete();
     }
 
     // 예약 폼 제출
@@ -128,17 +120,14 @@ public class ReservationService {
                 .build();
         Submission submission = submissionService.saveSubmission(tmpSubmission);
 
-        List<Answer> answers = new ArrayList<>();
-        for (QuestionSubmitRequestDTO q : dto.getAnswers()) {
+        List<Answer> answers = dto.getAnswers().stream().map(q -> {
             Question question = questionRepository.findByReservationAndQuestionOrder(reservation, q.getOrder());
-
-            Answer answer = Answer.builder()
+            return Answer.builder()
                     .submission(submission)
                     .question(question)
                     .content(q.getContent())
                     .build();
-            answers.add(answer);
-        }
+        }).toList();
         submissionService.saveAllAnswers(answers);
 
         return ReservationSubmitResponseDTO.builder()
