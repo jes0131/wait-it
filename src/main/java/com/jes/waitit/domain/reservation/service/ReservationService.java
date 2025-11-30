@@ -8,7 +8,8 @@ import com.jes.waitit.domain.reservation.repository.ReservationRepository;
 import com.jes.waitit.domain.submission.entity.Answer;
 import com.jes.waitit.domain.submission.entity.Submission;
 import com.jes.waitit.domain.submission.enums.SubmissionState;
-import com.jes.waitit.domain.submission.service.SubmissionService;
+import com.jes.waitit.domain.submission.repository.AnswerRepository;
+import com.jes.waitit.domain.submission.repository.SubmissionRepository;
 import com.jes.waitit.domain.user.entity.User;
 import com.jes.waitit.domain.user.service.UserService;
 import com.jes.waitit.global.exception.CustomException;
@@ -24,10 +25,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationService {
     private final UserService userService;
-    private final SubmissionService submissionService;
 
     private final ReservationRepository reservationRepository;
     private final QuestionRepository questionRepository;
+    private final SubmissionRepository submissionRepository;
+    private final AnswerRepository answerRepository;
 
     private final TmpPasswordGenerator tmpPasswordGenerator;
 
@@ -112,7 +114,8 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        Integer waitingNum = submissionService.findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId) + 1;
+        Integer waitingNum = submissionRepository
+                .findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId).orElse(0) + 1;
         String accessCode = tmpPasswordGenerator.generatePassword(6);
 
         Submission tmpSubmission = Submission.builder()
@@ -120,8 +123,9 @@ public class ReservationService {
                 .waitingNum(waitingNum)
                 .accessCode(accessCode)
                 .submissionState(SubmissionState.PENDING)
+                .isDeleted(false)
                 .build();
-        Submission submission = submissionService.saveSubmission(tmpSubmission);
+        Submission submission = submissionRepository.save(tmpSubmission);
 
         List<Answer> answers = dto.getAnswers().stream().map(q -> {
             Question question = questionRepository.findByReservationAndQuestionOrder(reservation, q.getOrder());
@@ -131,7 +135,7 @@ public class ReservationService {
                     .content(q.getContent())
                     .build();
         }).toList();
-        submissionService.saveAllAnswers(answers);
+        answerRepository.saveAll(answers);
 
         return ReservationSubmitResponseDTO.builder()
                 .waitingNum(waitingNum)
@@ -142,8 +146,8 @@ public class ReservationService {
     // Websocket 최초 데이터 전송
     @Transactional
     public ReservationStatusInitialDataDTO getInitialData(Long reservationId) {
-        Integer lastProcessedWaitingNum = submissionService.findLastProcessedWaitingNumByReservationId(reservationId);
-        Integer waitingCount = submissionService.countPendingByReservationId(reservationId);
+        Integer lastProcessedWaitingNum = submissionRepository.findLastProcessedWaitingNumByReservationId(reservationId).orElse(0);
+        Integer waitingCount = submissionRepository.countByReservationIdAndSubmissionState(reservationId, SubmissionState.PENDING);
         return new ReservationStatusInitialDataDTO(waitingCount, lastProcessedWaitingNum);
     }
 }
