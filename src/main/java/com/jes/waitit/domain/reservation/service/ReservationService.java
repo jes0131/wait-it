@@ -15,7 +15,6 @@ import com.jes.waitit.global.exception.CustomException;
 import com.jes.waitit.global.exception.ErrorCode;
 import com.jes.waitit.global.security.TmpPasswordGenerator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,11 +30,15 @@ public class ReservationService {
     private final QuestionRepository questionRepository;
 
     private final TmpPasswordGenerator tmpPasswordGenerator;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public boolean existReservationById(Long reservationId) {
         return reservationRepository.existsById(reservationId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Question> findAllByReservationIdOrderByQuestionOrderAsc(Long reservationId) {
+        return questionRepository.findAllByReservationIdOrderByQuestionOrderAsc(reservationId);
     }
 
     // 예약 폼 생성
@@ -110,12 +113,12 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         Integer waitingNum = submissionService.findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId) + 1;
-        String password = tmpPasswordGenerator.generatePassword(6);
+        String accessCode = tmpPasswordGenerator.generatePassword(6);
 
         Submission tmpSubmission = Submission.builder()
                 .reservation(reservation)
                 .waitingNum(waitingNum)
-                .password(passwordEncoder.encode(password))
+                .accessCode(accessCode)
                 .submissionState(SubmissionState.PENDING)
                 .build();
         Submission submission = submissionService.saveSubmission(tmpSubmission);
@@ -132,7 +135,7 @@ public class ReservationService {
 
         return ReservationSubmitResponseDTO.builder()
                 .waitingNum(waitingNum)
-                .password(password)
+                .accessCode(accessCode)
                 .build();
     }
 
