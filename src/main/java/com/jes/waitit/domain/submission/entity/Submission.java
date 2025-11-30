@@ -47,4 +47,9 @@ public class Submission {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+
+    public void update(SubmissionState submissionState, String comment) {
+        this.submissionState = submissionState;
+        this.comment = comment;
+    }
 }
