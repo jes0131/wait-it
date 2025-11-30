@@ -38,11 +38,6 @@ public class ReservationService {
         return reservationRepository.existsById(reservationId);
     }
 
-    @Transactional(readOnly = true)
-    public List<Question> findAllByReservationIdOrderByQuestionOrderAsc(Long reservationId) {
-        return questionRepository.findAllByReservationIdOrderByQuestionOrderAsc(reservationId);
-    }
-
     // 예약 폼 생성
     @Transactional
     public void createReservation(String username, ReservationCreateRequestDTO dto) {
@@ -75,7 +70,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        List<Question> questions = questionRepository.findAllByReservationOrderByQuestionOrderAsc(reservation);
+        List<Question> questions = questionRepository.findAllByReservationIdOrderByQuestionOrderAsc(reservation.getId());
         List<QuestionDetailResponseDTO> questionDetails = questions.stream().map(q -> QuestionDetailResponseDTO.builder()
                     .order(q.getQuestionOrder())
                     .questionType(q.getQuestionType())
