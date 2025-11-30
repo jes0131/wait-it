@@ -5,6 +5,9 @@ import com.jes.waitit.domain.reservation.entity.Question;
 import com.jes.waitit.domain.reservation.entity.Reservation;
 import com.jes.waitit.domain.reservation.repository.QuestionRepository;
 import com.jes.waitit.domain.reservation.repository.ReservationRepository;
+import com.jes.waitit.domain.reservation.websocket.ReservationStatusBroadcaster;
+import com.jes.waitit.domain.submission.dto.AnswerSummaryResponseDTO;
+import com.jes.waitit.domain.submission.dto.SubmissionSummaryResponseDTO;
 import com.jes.waitit.domain.submission.entity.Answer;
 import com.jes.waitit.domain.submission.entity.Submission;
 import com.jes.waitit.domain.submission.enums.SubmissionState;
@@ -16,6 +19,9 @@ import com.jes.waitit.global.exception.CustomException;
 import com.jes.waitit.global.exception.ErrorCode;
 import com.jes.waitit.global.security.TmpPasswordGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,14 +39,11 @@ public class ReservationService {
 
     private final TmpPasswordGenerator tmpPasswordGenerator;
 
+    private final ReservationStatusBroadcaster reservationStatusBroadcaster;
+
     @Transactional(readOnly = true)
     public boolean existReservationById(Long reservationId) {
         return reservationRepository.existsById(reservationId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Question> findAllByReservationIdOrderByQuestionOrderAsc(Long reservationId) {
-        return questionRepository.findAllByReservationIdOrderByQuestionOrderAsc(reservationId);
     }
 
     // 예약 폼 생성
@@ -75,7 +78,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        List<Question> questions = questionRepository.findAllByReservationOrderByQuestionOrderAsc(reservation);
+        List<Question> questions = questionRepository.findAllByReservationIdOrderByQuestionOrderAsc(reservation.getId());
         List<QuestionDetailResponseDTO> questionDetails = questions.stream().map(q -> QuestionDetailResponseDTO.builder()
                     .order(q.getQuestionOrder())
                     .questionType(q.getQuestionType())
@@ -137,10 +140,49 @@ public class ReservationService {
         }).toList();
         answerRepository.saveAll(answers);
 
+        reservationStatusBroadcaster.updateWaitingCount(
+                reservationId,
+                submissionRepository.countByReservationIdAndSubmissionState(
+                        reservationId,
+                        SubmissionState.PENDING
+                )
+        );
+
         return ReservationSubmitResponseDTO.builder()
                 .waitingNum(waitingNum)
                 .accessCode(accessCode)
                 .build();
+    }
+
+    // 제출 조회
+    @Transactional
+    public Page<SubmissionSummaryResponseDTO> getSubmissions(Long reservationId, String username, Pageable pageable) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!username.equals(reservation.getOwner().getUsername())) {
+            throw new CustomException(ErrorCode.RESERVATION_GET_SUBMISSIONS_FORBIDDEN);
+        }
+
+        List<Submission> submissions = submissionRepository.findAllByReservationIdAndIsDeletedFalse(reservationId);
+
+        List<SubmissionSummaryResponseDTO> submissionSummaries = submissions.stream().map(s -> {
+            List<Answer> answers = answerRepository.findAllBySubmissionIdOrderByQuestionIdAsc(s.getId());
+            List<AnswerSummaryResponseDTO> answerSummaries = answers.stream().map(a ->
+                    new AnswerSummaryResponseDTO(a.getContent())
+            ).toList();
+
+            return SubmissionSummaryResponseDTO.builder()
+                    .id(s.getId())
+                    .submissionState(s.getSubmissionState())
+                    .comment(s.getComment())
+                    .waitingNum(s.getWaitingNum())
+                    .answers(answerSummaries)
+                    .submittedAt(s.getSubmittedAt())
+                    .build();
+        }).toList();
+
+        return new PageImpl<>(submissionSummaries, pageable, submissions.size());
     }
 
     // Websocket 최초 데이터 전송

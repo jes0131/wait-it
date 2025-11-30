@@ -17,6 +17,7 @@ public enum ErrorCode {
 
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
     RESERVATION_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 예약을 삭제할 권한이 없습니다."),
+    RESERVATION_GET_SUBMISSIONS_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 예약의 정보를 조회할 권한이 없습니다."),
 
     SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 제출입니다."),
     SUBMISSION_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 제출을 수정할 권한이 없습니다.");

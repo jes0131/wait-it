@@ -5,8 +5,11 @@ import com.jes.waitit.domain.reservation.dto.ReservationDetailResponseDTO;
 import com.jes.waitit.domain.reservation.dto.ReservationSubmitRequestDTO;
 import com.jes.waitit.domain.reservation.dto.ReservationSubmitResponseDTO;
 import com.jes.waitit.domain.reservation.service.ReservationService;
+import com.jes.waitit.domain.submission.dto.SubmissionSummaryResponseDTO;
 import com.jes.waitit.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,6 +33,17 @@ public class ReservationController {
     @GetMapping("{id}")
     public ResponseEntity<ApiResponse<ReservationDetailResponseDTO>> getReservation(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(reservationService.getReservation(id)));
+    }
+
+    @GetMapping("{id}/submission")
+    public ResponseEntity<ApiResponse<Page<SubmissionSummaryResponseDTO>>> getReservationSubmission(
+            @PathVariable Long id,
+            Authentication authentication,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(
+                reservationService.getSubmissions(id, authentication.getName(), pageable)
+        ));
     }
 
     @DeleteMapping("{id}")
