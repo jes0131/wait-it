@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class ReservationSubmitResponseDTO {
     private Integer waitingNum;
-    private String password;
+    private String accessCode;
 }

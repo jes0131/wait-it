@@ -31,8 +31,8 @@ public class Submission {
     @Column(name = "waiting_num")
     private Integer waitingNum;
 
-    @Column
-    private String password;
+    @Column(name = "access_code")
+    private String accessCode;
 
     @Column(name = "submission_state")
     @Enumerated(EnumType.STRING)
