@@ -8,7 +8,6 @@ import com.jes.waitit.domain.submission.dto.SubmissionUpdateRequestDTO;
 import com.jes.waitit.domain.submission.dto.SubmissionUpdateResponseDTO;
 import com.jes.waitit.domain.submission.entity.Answer;
 import com.jes.waitit.domain.submission.entity.Submission;
-import com.jes.waitit.domain.submission.enums.SubmissionState;
 import com.jes.waitit.domain.submission.repository.AnswerRepository;
 import com.jes.waitit.domain.submission.repository.SubmissionRepository;
 import com.jes.waitit.global.exception.CustomException;
@@ -27,28 +26,6 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
-
-    public Submission saveSubmission(Submission submission) {
-        return submissionRepository.save(submission);
-    }
-
-    public Integer findLastProcessedWaitingNumByReservationId(Long reservationId) {
-        return submissionRepository.findLastProcessedWaitingNumByReservationId(reservationId)
-                .orElse(0);
-    }
-
-    public Integer findLastWaitingNumByReservationIdAndIsDeletedFalse(Long reservationId) {
-        return submissionRepository.findLastWaitingNumByReservationIdAndIsDeletedFalse(reservationId)
-                .orElse(0);
-    }
-
-    public Integer countPendingByReservationId(Long reservationId) {
-        return submissionRepository.countByReservationIdAndSubmissionState(reservationId, SubmissionState.PENDING);
-    }
-
-    public List<Answer> saveAllAnswers(List<Answer> answers) {
-        return answerRepository.saveAll(answers);
-    }
 
     // Submission 정보 가져오기
     @Transactional
