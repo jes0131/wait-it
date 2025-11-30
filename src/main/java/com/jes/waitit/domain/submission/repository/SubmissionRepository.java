@@ -1,5 +1,6 @@
 package com.jes.waitit.domain.submission.repository;
 
+import com.jes.waitit.domain.submission.dto.SubmissionDetailResponseDTO;
 import com.jes.waitit.domain.submission.entity.Submission;
 import com.jes.waitit.domain.submission.enums.SubmissionState;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     Optional<Integer> findLastWaitingNumByReservationIdAndIsDeletedFalse(Long reservationId);
 
     Integer countByReservationIdAndSubmissionState(Long reservationId, SubmissionState submissionState);
+
+    Optional<Submission> findByAccessCodeAndIsDeletedFalse(String accessCode);
 }

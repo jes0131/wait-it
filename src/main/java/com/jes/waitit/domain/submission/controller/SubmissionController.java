@@ -1,5 +1,6 @@
 package com.jes.waitit.domain.submission.controller;
 
+import com.jes.waitit.domain.submission.dto.SubmissionDetailResponseDTO;
 import com.jes.waitit.domain.submission.dto.SubmissionUpdateRequestDTO;
 import com.jes.waitit.domain.submission.dto.SubmissionUpdateResponseDTO;
 import com.jes.waitit.domain.submission.service.SubmissionService;
@@ -14,6 +15,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SubmissionController {
     private final SubmissionService submissionService;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<SubmissionDetailResponseDTO>> getSubmissionDetail(
+            @RequestParam(name = "code") String accessCode
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(submissionService.getSubmissionDetail(accessCode)));
+    }
 
     @PatchMapping("{id}")
     public ResponseEntity<ApiResponse<SubmissionUpdateResponseDTO>> updateSubmission(

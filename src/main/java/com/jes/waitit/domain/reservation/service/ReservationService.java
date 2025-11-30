@@ -36,6 +36,11 @@ public class ReservationService {
         return reservationRepository.existsById(reservationId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Question> findAllByReservationIdOrderByQuestionOrderAsc(Long reservationId) {
+        return questionRepository.findAllByReservationIdOrderByQuestionOrderAsc(reservationId);
+    }
+
     // 예약 폼 생성
     @Transactional
     public void createReservation(String username, ReservationCreateRequestDTO dto) {
