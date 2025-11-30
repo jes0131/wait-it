@@ -5,6 +5,7 @@ import com.jes.waitit.domain.reservation.entity.Question;
 import com.jes.waitit.domain.reservation.entity.Reservation;
 import com.jes.waitit.domain.reservation.repository.QuestionRepository;
 import com.jes.waitit.domain.reservation.repository.ReservationRepository;
+import com.jes.waitit.domain.reservation.websocket.ReservationStatusBroadcaster;
 import com.jes.waitit.domain.submission.dto.AnswerSummaryResponseDTO;
 import com.jes.waitit.domain.submission.dto.SubmissionSummaryResponseDTO;
 import com.jes.waitit.domain.submission.entity.Answer;
@@ -37,6 +38,8 @@ public class ReservationService {
     private final AnswerRepository answerRepository;
 
     private final TmpPasswordGenerator tmpPasswordGenerator;
+
+    private final ReservationStatusBroadcaster reservationStatusBroadcaster;
 
     @Transactional(readOnly = true)
     public boolean existReservationById(Long reservationId) {
@@ -136,6 +139,14 @@ public class ReservationService {
                     .build();
         }).toList();
         answerRepository.saveAll(answers);
+
+        reservationStatusBroadcaster.updateWaitingCount(
+                reservationId,
+                submissionRepository.countByReservationIdAndSubmissionState(
+                        reservationId,
+                        SubmissionState.PENDING
+                )
+        );
 
         return ReservationSubmitResponseDTO.builder()
                 .waitingNum(waitingNum)
