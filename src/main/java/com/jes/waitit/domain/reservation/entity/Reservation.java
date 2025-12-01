@@ -35,7 +35,7 @@ public class Reservation {
     private LocalDateTime createdAt;
 
     @Column(name = "is_deleted")
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public void delete() {
         this.isDeleted = true;

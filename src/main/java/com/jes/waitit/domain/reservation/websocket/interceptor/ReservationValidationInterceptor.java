@@ -1,6 +1,6 @@
 package com.jes.waitit.domain.reservation.websocket.interceptor;
 
-import com.jes.waitit.domain.reservation.service.ReservationService;
+import com.jes.waitit.domain.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class ReservationValidationInterceptor implements HandshakeInterceptor {
-    private final ReservationService reservationService;
+    private final ReservationRepository reservationRepository;
+
     @Override
     public boolean beforeHandshake(
             ServerHttpRequest request,
@@ -45,7 +46,7 @@ public class ReservationValidationInterceptor implements HandshakeInterceptor {
             return false;
         }
 
-        if (!reservationService.existReservationById(reservationId)) {
+        if (!reservationRepository.existsByIdAndIsDeletedFalse(reservationId)) {
             log.warn("[{}] Reservation {} not found", this.getClass().getSimpleName(), reservationId);
             response.setStatusCode(HttpStatus.NOT_FOUND);
             return false;

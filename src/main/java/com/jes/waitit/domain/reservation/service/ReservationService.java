@@ -47,11 +47,6 @@ public class ReservationService {
 
     private final ReservationStatusBroadcaster reservationStatusBroadcaster;
 
-    @Transactional(readOnly = true)
-    public boolean existReservationById(Long reservationId) {
-        return reservationRepository.existsById(reservationId);
-    }
-
     // 예약 폼 생성
     @Transactional
     public void createReservation(String username, ReservationCreateRequestDTO dto) {
