@@ -84,7 +84,7 @@ public class ReservationStatusBroadcaster {
         try {
             message = mapper.writeValueAsString(
                     WebsocketSendMessage.build(
-                            ReservationStatusEvent.UPDATE_LAST_WAITING_NUM.toString(),
+                            ReservationStatusEvent.UPDATE_LAST_PROCESSED_WAITING_NUM.toString(),
                             new ReservationStatusUpdateLastProcessedWaitingNum(lastProcessedWaitingNum)
                     )
             );

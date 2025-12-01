@@ -2,12 +2,14 @@ package com.jes.waitit.domain.submission.service;
 
 import com.jes.waitit.domain.reservation.entity.Question;
 import com.jes.waitit.domain.reservation.repository.QuestionRepository;
+import com.jes.waitit.domain.reservation.websocket.ReservationStatusBroadcaster;
 import com.jes.waitit.domain.submission.dto.AnswerDetailResponseDTO;
 import com.jes.waitit.domain.submission.dto.SubmissionDetailResponseDTO;
 import com.jes.waitit.domain.submission.dto.SubmissionUpdateRequestDTO;
 import com.jes.waitit.domain.submission.dto.SubmissionUpdateResponseDTO;
 import com.jes.waitit.domain.submission.entity.Answer;
 import com.jes.waitit.domain.submission.entity.Submission;
+import com.jes.waitit.domain.submission.enums.SubmissionState;
 import com.jes.waitit.domain.submission.repository.AnswerRepository;
 import com.jes.waitit.domain.submission.repository.SubmissionRepository;
 import com.jes.waitit.global.exception.CustomException;
@@ -26,6 +28,8 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
+
+    private final ReservationStatusBroadcaster reservationStatusBroadcaster;
 
     // Submission 정보 가져오기
     @Transactional
@@ -67,10 +71,31 @@ public class SubmissionService {
         }
 
         submission.update(dto.getSubmissionState(), dto.getComment());
+
         return SubmissionUpdateResponseDTO.builder()
                 .id(submission.getId())
                 .submissionState(submission.getSubmissionState())
                 .comment(submission.getComment())
                 .build();
+    }
+
+    // update로 변경된 내용 WebSocket에 전송
+    public void broadcastSubmission(Long submissionId) {
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SUBMISSION_NOT_FOUND));
+
+        Long reservationId = submission.getReservation().getId();
+        reservationStatusBroadcaster.updateWaitingCount(
+                reservationId,
+                submissionRepository.countByReservationIdAndSubmissionState(
+                        reservationId,
+                        SubmissionState.PENDING
+                )
+        );
+        reservationStatusBroadcaster.updateLastProcessedWaitingNum(
+                reservationId,
+                submissionRepository.findLastProcessedWaitingNumByReservationId(reservationId)
+                        .orElse(0)
+        );
     }
 }

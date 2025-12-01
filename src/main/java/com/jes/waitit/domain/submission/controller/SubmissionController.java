@@ -29,8 +29,8 @@ public class SubmissionController {
             Authentication authentication,
             @RequestBody SubmissionUpdateRequestDTO submissionUpdateRequestDTO
     ) {
-        return ResponseEntity.ok(ApiResponse.success(
-                submissionService.updateSubmission(id, authentication.getName(), submissionUpdateRequestDTO)
-        ));
+        SubmissionUpdateResponseDTO response = submissionService.updateSubmission(id, authentication.getName(), submissionUpdateRequestDTO);
+        submissionService.broadcastSubmission(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
