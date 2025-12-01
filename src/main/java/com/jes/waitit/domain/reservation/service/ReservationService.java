@@ -77,7 +77,7 @@ public class ReservationService {
     // 예약 폼 세부 정보 조회
     @Transactional(readOnly = true)
     public ReservationDetailResponseDTO getReservation(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findByIdAndIsDeletedFalse(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         List<Question> questions = questionRepository.findAllByReservationIdOrderByQuestionOrderAsc(reservation.getId());
@@ -103,7 +103,7 @@ public class ReservationService {
     // 예약 폼 삭제
     @Transactional
     public void deletedReservation(Long reservationId, String username) {
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findByIdAndIsDeletedFalse(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!username.equals(reservation.getOwner().getUsername())) {
@@ -116,7 +116,7 @@ public class ReservationService {
     // 예약 폼 제출
     @Transactional
     public ReservationSubmitResponseDTO submitReservation(Long reservationId, ReservationSubmitRequestDTO dto) {
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findByIdAndIsDeletedFalse(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         Integer waitingNum = submissionRepository
@@ -159,7 +159,7 @@ public class ReservationService {
     // 제출 조회
     @Transactional
     public Page<SubmissionSummaryResponseDTO> getSubmissions(Long reservationId, String username, Pageable pageable) {
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findByIdAndIsDeletedFalse(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!username.equals(reservation.getOwner().getUsername())) {
