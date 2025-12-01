@@ -56,6 +56,7 @@ public class ReservationService {
                 .owner(user)
                 .title(dto.getTitle())
                 .description(dto.getDescription())
+                .isDeleted(false)
                 .build();
         Reservation reservation = reservationRepository.save(newReservation);
 
