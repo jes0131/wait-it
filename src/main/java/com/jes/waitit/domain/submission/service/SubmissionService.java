@@ -2,11 +2,11 @@ package com.jes.waitit.domain.submission.service;
 
 import com.jes.waitit.domain.reservation.entity.Question;
 import com.jes.waitit.domain.reservation.repository.QuestionRepository;
-import com.jes.waitit.domain.reservation.websocket.ReservationStatusBroadcaster;
-import com.jes.waitit.domain.submission.dto.AnswerDetailResponseDTO;
-import com.jes.waitit.domain.submission.dto.SubmissionDetailResponseDTO;
-import com.jes.waitit.domain.submission.dto.SubmissionUpdateRequestDTO;
-import com.jes.waitit.domain.submission.dto.SubmissionUpdateResponseDTO;
+import com.jes.waitit.domain.reservation.websocket.broadcaster.ReservationStatusBroadcaster;
+import com.jes.waitit.domain.submission.dto.response.AnswerDetailResponseDTO;
+import com.jes.waitit.domain.submission.dto.response.SubmissionDetailResponseDTO;
+import com.jes.waitit.domain.submission.dto.request.SubmissionUpdateRequestDTO;
+import com.jes.waitit.domain.submission.dto.response.SubmissionUpdateResponseDTO;
 import com.jes.waitit.domain.submission.entity.Answer;
 import com.jes.waitit.domain.submission.entity.Submission;
 import com.jes.waitit.domain.submission.enums.SubmissionState;

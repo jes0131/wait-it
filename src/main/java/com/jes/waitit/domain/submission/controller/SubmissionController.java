@@ -1,8 +1,8 @@
 package com.jes.waitit.domain.submission.controller;
 
-import com.jes.waitit.domain.submission.dto.SubmissionDetailResponseDTO;
-import com.jes.waitit.domain.submission.dto.SubmissionUpdateRequestDTO;
-import com.jes.waitit.domain.submission.dto.SubmissionUpdateResponseDTO;
+import com.jes.waitit.domain.submission.dto.response.SubmissionDetailResponseDTO;
+import com.jes.waitit.domain.submission.dto.request.SubmissionUpdateRequestDTO;
+import com.jes.waitit.domain.submission.dto.response.SubmissionUpdateResponseDTO;
 import com.jes.waitit.domain.submission.service.SubmissionService;
 import com.jes.waitit.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;

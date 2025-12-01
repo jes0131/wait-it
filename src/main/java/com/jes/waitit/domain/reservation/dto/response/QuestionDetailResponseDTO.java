@@ -1,4 +1,4 @@
-package com.jes.waitit.domain.reservation.dto;
+package com.jes.waitit.domain.reservation.dto.response;
 
 import com.jes.waitit.domain.reservation.enums.QuestionType;
 import lombok.Builder;

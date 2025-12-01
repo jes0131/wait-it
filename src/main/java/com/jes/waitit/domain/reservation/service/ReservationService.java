@@ -1,13 +1,19 @@
 package com.jes.waitit.domain.reservation.service;
 
-import com.jes.waitit.domain.reservation.dto.*;
+import com.jes.waitit.domain.reservation.dto.request.QuestionCreateRequestDTO;
+import com.jes.waitit.domain.reservation.dto.request.ReservationCreateRequestDTO;
+import com.jes.waitit.domain.reservation.dto.request.ReservationSubmitRequestDTO;
+import com.jes.waitit.domain.reservation.dto.response.QuestionDetailResponseDTO;
+import com.jes.waitit.domain.reservation.dto.response.ReservationDetailResponseDTO;
+import com.jes.waitit.domain.reservation.dto.response.ReservationSubmitResponseDTO;
 import com.jes.waitit.domain.reservation.entity.Question;
 import com.jes.waitit.domain.reservation.entity.Reservation;
 import com.jes.waitit.domain.reservation.repository.QuestionRepository;
 import com.jes.waitit.domain.reservation.repository.ReservationRepository;
-import com.jes.waitit.domain.reservation.websocket.ReservationStatusBroadcaster;
-import com.jes.waitit.domain.submission.dto.AnswerSummaryResponseDTO;
-import com.jes.waitit.domain.submission.dto.SubmissionSummaryResponseDTO;
+import com.jes.waitit.domain.reservation.websocket.broadcaster.ReservationStatusBroadcaster;
+import com.jes.waitit.domain.reservation.websocket.dto.ReservationStatusInitialDataDTO;
+import com.jes.waitit.domain.submission.dto.response.AnswerSummaryResponseDTO;
+import com.jes.waitit.domain.submission.dto.response.SubmissionSummaryResponseDTO;
 import com.jes.waitit.domain.submission.entity.Answer;
 import com.jes.waitit.domain.submission.entity.Submission;
 import com.jes.waitit.domain.submission.enums.SubmissionState;
@@ -113,7 +119,7 @@ public class ReservationService {
 
     // 예약 폼 제출
     @Transactional
-    public ReservationSubmitResponseDTO submitReservation(Long reservationId,ReservationSubmitRequestDTO dto) {
+    public ReservationSubmitResponseDTO submitReservation(Long reservationId, ReservationSubmitRequestDTO dto) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 

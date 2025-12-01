@@ -1,6 +1,10 @@
 package com.jes.waitit.domain.auth.controller;
 
-import com.jes.waitit.domain.auth.dto.*;
+import com.jes.waitit.domain.auth.dto.request.LoginRequestDTO;
+import com.jes.waitit.domain.auth.dto.request.RefreshRequestDTO;
+import com.jes.waitit.domain.auth.dto.request.RegisterRequestDTO;
+import com.jes.waitit.domain.auth.dto.response.LoginResponseDTO;
+import com.jes.waitit.domain.auth.dto.response.RefreshResponseDTO;
 import com.jes.waitit.domain.auth.service.AuthService;
 import com.jes.waitit.global.dto.ApiResponse;
 import jakarta.validation.Valid;

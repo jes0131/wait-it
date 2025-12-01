@@ -1,4 +1,4 @@
-package com.jes.waitit.domain.reservation.dto;
+package com.jes.waitit.domain.reservation.websocket.dto;
 
 import lombok.Getter;
 

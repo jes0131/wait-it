@@ -2,7 +2,11 @@ package com.jes.waitit.domain.auth.service;
 
 import static com.jes.waitit.global.security.TokenConstants.*;
 
-import com.jes.waitit.domain.auth.dto.*;
+import com.jes.waitit.domain.auth.dto.request.LoginRequestDTO;
+import com.jes.waitit.domain.auth.dto.request.RefreshRequestDTO;
+import com.jes.waitit.domain.auth.dto.request.RegisterRequestDTO;
+import com.jes.waitit.domain.auth.dto.response.LoginResponseDTO;
+import com.jes.waitit.domain.auth.dto.response.RefreshResponseDTO;
 import com.jes.waitit.domain.auth.entity.RefreshToken;
 import com.jes.waitit.domain.auth.repository.RefreshTokenRepository;
 import com.jes.waitit.domain.user.entity.User;

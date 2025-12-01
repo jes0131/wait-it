@@ -1,9 +1,9 @@
-package com.jes.waitit.domain.reservation.websocket;
+package com.jes.waitit.domain.reservation.websocket.broadcaster;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jes.waitit.domain.reservation.dto.ReservationStatusInitialDataDTO;
-import com.jes.waitit.domain.reservation.dto.ReservationStatusUpdateLastProcessedWaitingNum;
-import com.jes.waitit.domain.reservation.dto.ReservationStatusUpdateWaitingCountDTO;
+import com.jes.waitit.domain.reservation.websocket.dto.ReservationStatusInitialDataDTO;
+import com.jes.waitit.domain.reservation.websocket.dto.ReservationStatusUpdateLastProcessedWaitingNumDTO;
+import com.jes.waitit.domain.reservation.websocket.dto.ReservationStatusUpdateWaitingCountDTO;
 import com.jes.waitit.domain.reservation.enums.ReservationStatusEvent;
 import com.jes.waitit.global.dto.WebsocketSendMessage;
 import org.springframework.stereotype.Service;
@@ -85,7 +85,7 @@ public class ReservationStatusBroadcaster {
             message = mapper.writeValueAsString(
                     WebsocketSendMessage.build(
                             ReservationStatusEvent.UPDATE_LAST_PROCESSED_WAITING_NUM.toString(),
-                            new ReservationStatusUpdateLastProcessedWaitingNum(lastProcessedWaitingNum)
+                            new ReservationStatusUpdateLastProcessedWaitingNumDTO(lastProcessedWaitingNum)
                     )
             );
         } catch (Exception e) {

@@ -1,13 +1,10 @@
-package com.jes.waitit.domain.submission.dto;
+package com.jes.waitit.domain.submission.dto.request;
 
 import com.jes.waitit.domain.submission.enums.SubmissionState;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
-public class SubmissionUpdateResponseDTO {
-    private Long id;
+public class SubmissionUpdateRequestDTO {
     private SubmissionState submissionState;
     private String comment;
 }

@@ -1,4 +1,4 @@
-package com.jes.waitit.domain.auth.dto;
+package com.jes.waitit.domain.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

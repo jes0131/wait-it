@@ -1,7 +1,7 @@
 package com.jes.waitit.global.websocket;
 
-import com.jes.waitit.domain.reservation.websocket.ReservationValidationInterceptor;
-import com.jes.waitit.domain.reservation.websocket.ReservationStatusHandler;
+import com.jes.waitit.domain.reservation.websocket.interceptor.ReservationValidationInterceptor;
+import com.jes.waitit.domain.reservation.websocket.handler.ReservationStatusHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

@@ -1,6 +1,5 @@
 package com.jes.waitit.domain.submission.repository;
 
-import com.jes.waitit.domain.submission.dto.SubmissionDetailResponseDTO;
 import com.jes.waitit.domain.submission.entity.Submission;
 import com.jes.waitit.domain.submission.enums.SubmissionState;
 import org.springframework.data.jpa.repository.JpaRepository;

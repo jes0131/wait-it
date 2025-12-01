@@ -1,11 +1,11 @@
 package com.jes.waitit.domain.reservation.controller;
 
-import com.jes.waitit.domain.reservation.dto.ReservationCreateRequestDTO;
-import com.jes.waitit.domain.reservation.dto.ReservationDetailResponseDTO;
-import com.jes.waitit.domain.reservation.dto.ReservationSubmitRequestDTO;
-import com.jes.waitit.domain.reservation.dto.ReservationSubmitResponseDTO;
+import com.jes.waitit.domain.reservation.dto.request.ReservationCreateRequestDTO;
+import com.jes.waitit.domain.reservation.dto.response.ReservationDetailResponseDTO;
+import com.jes.waitit.domain.reservation.dto.request.ReservationSubmitRequestDTO;
+import com.jes.waitit.domain.reservation.dto.response.ReservationSubmitResponseDTO;
 import com.jes.waitit.domain.reservation.service.ReservationService;
-import com.jes.waitit.domain.submission.dto.SubmissionSummaryResponseDTO;
+import com.jes.waitit.domain.submission.dto.response.SubmissionSummaryResponseDTO;
 import com.jes.waitit.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,7 @@
-package com.jes.waitit.domain.reservation.websocket;
+package com.jes.waitit.domain.reservation.websocket.handler;
 
 import com.jes.waitit.domain.reservation.service.ReservationService;
+import com.jes.waitit.domain.reservation.websocket.broadcaster.ReservationStatusBroadcaster;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

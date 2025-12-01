@@ -1,4 +1,4 @@
-package com.jes.waitit.domain.reservation.websocket;
+package com.jes.waitit.domain.reservation.websocket.interceptor;
 
 import com.jes.waitit.domain.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
