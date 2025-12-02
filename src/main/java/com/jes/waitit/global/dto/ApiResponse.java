@@ -1,5 +1,6 @@
 package com.jes.waitit.global.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,10 +11,18 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(description = "전역 응답 DTO")
 public class ApiResponse<T> {
+    @Schema(description = "요청 성공 여부", example = "true")
     private boolean success;
+
+    @Schema(description = "Http 상태 코드", example = "200")
     private int status;
+
+    @Schema(description = "메세지", example = "요청 성공")
     private String message;
+
+    @Schema(description = "응답 데이터")
     private T data;
 
     // 성공
